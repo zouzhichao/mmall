@@ -1,9 +1,11 @@
 package com.mmall.controller.portal;
 
 import com.mmall.common.Const;
+import com.mmall.common.ResponseCode;
 import com.mmall.common.ServerResponse;
 import com.mmall.pojo.User;
 import com.mmall.service.IUserService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -38,4 +40,36 @@ public class UserController {
         }
         return response;
     }
+
+    /**
+     * 用户注销
+     * @param session
+     * @return
+     */
+    @RequestMapping(value = "logout.do",method = RequestMethod.GET)
+    @ResponseBody
+    public ServerResponse<String> logout(HttpSession session){
+        User user  = (User) session.getAttribute(Const.CURRENT_USER);
+        if(user!=null){
+            session.removeAttribute(Const.CURRENT_USER);
+        }
+        return ServerResponse.createBySuccess();
+    }
+
+    @RequestMapping(value = "register.do",method = RequestMethod.GET)
+    @ResponseBody
+    public ServerResponse<String> register(User user){
+        if (user == null){
+            return ServerResponse.createByErrorCodeMessage(ResponseCode.ERROR.getCode(),"输入参数错误");
+        }
+        return iUserService.register(user);
+    }
+
+    @RequestMapping(value = "check_valid.do",method = RequestMethod.GET)
+    @ResponseBody
+    public ServerResponse<String> checkValid(String str,String type){
+       return iUserService.checkValid(str,type);
+    }
+
+
 }
